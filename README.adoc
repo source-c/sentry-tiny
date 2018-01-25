@@ -1,0 +1,29 @@
+= sentry-tiny
+
+A Clojure library designed to cover basic needs of pushing exceptions into Sentry.
+Not more, but not less
+
+image:https://img.shields.io/clojars/v/net.tbt-post/sentry-tiny.svg[]
+
+== Usage
+
+Add the following to your http://github.com/technomancy/leiningen[Leiningen's] `project.clj`:
+
+[source,clojure]
+----
+[net.tbt-post/sentry-tiny "0.1.2"]
+----
+
+== Manual Build
+
+[source,text]
+----
+$ lein install
+----
+
+== License
+
+Copyright © 2017-2018
+
+Distributed under the http://www.apache.org/licenses/LICENSE-2.0[Apache License v 2.0]
+
