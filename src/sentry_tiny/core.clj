@@ -1,4 +1,4 @@
-(ns clj-helpers-sentry.core
+(ns sentry-tiny.core
   (:gen-class)
   (:require
     [clojure.string :as str]
@@ -17,6 +17,12 @@
     (try
       (.getHostName (InetAddress/getLocalHost))
       (catch Exception _ "unknown"))))
+
+(defonce ^{:private true
+           :const   true
+           :static  true}
+         client-name
+         "sentry-tiny/0.x.y")
 
 (defn- make-frame [^StackTraceElement element app-namespaces]
   {:filename (.getFileName element)
@@ -42,7 +48,7 @@
 
 (defn make-sentry-header [ts key secret]
   (str "Sentry sentry_version=2.0, "
-       "sentry_client=client-name/version, "
+       "sentry_client=" client-name ", "
        "sentry_timestamp=" ts ", "
        "sentry_key=" key ", "
        "sentry_secret=" secret))
@@ -54,7 +60,7 @@
                    :method           :post
                    :insecure?        true
                    :throw-exceptions false
-                   :headers          {"X-Sentry-Auth" header "User-Agent" "TbT-EnginE"}
+                   :headers          {"X-Sentry-Auth" header "User-Agent" client-name}
                    :body             (json/generate-string event-info)})))
 
 (defn capture [packet-info event-info]

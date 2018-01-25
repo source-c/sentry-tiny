@@ -1,6 +1,6 @@
-(ns clj-helpers-sentry.core-test
+(ns sentry-tiny.core-test
   (:require [clojure.test :refer :all]
-            [clj-helpers-sentry.core :refer :all]))
+            [sentry-tiny.core :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."
