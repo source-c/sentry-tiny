@@ -1,4 +1,4 @@
-(defproject net.tbt-post/sentry-tiny "0.1.2"
+(defproject net.tbt-post/sentry-tiny "0.1.3"
   :description "Tiny Sentry Interface for Clojure"
   :url "https://github.com/source-c/sentry-tiny"
   :license {:name "Eclipse Public License"
@@ -6,8 +6,8 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [cheshire "5.8.0"]
                  [http-kit "2.2.0"]
+                 [clj-time "0.14.2"]
                  [danlentz/clj-uuid "0.1.7"]]
-  :omit-source true
   :plugins [[lein-ancient "0.6.15"]]
   :profiles {:uberjar {:aot :all :jvm-opts ~(let [version (System/getProperty "java.version")
                                                   [major _ _] (clojure.string/split version #"\.")]

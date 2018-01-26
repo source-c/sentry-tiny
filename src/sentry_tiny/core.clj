@@ -1,18 +1,21 @@
 (ns sentry-tiny.core
-  (:gen-class)
   (:require
     [clojure.string :as str]
     [org.httpkit.client :as http]
     [cheshire.core :as json]
-    [clj-uuid :as uuid])
+    [clj-uuid :as uuid]
+    [clj-time
+     [core :as t]
+     [format :as ft]])
   (:import
     (java.net InetAddress)
     (java.sql Timestamp)
-    (java.util Date)))
+    (java.util Date TimeZone)
+    (java.text SimpleDateFormat)))
 
-(defonce fallback (atom {:enabled? false}))
+(defonce ^:private fallback (atom {:enabled? false}))
 
-(def hostname
+(def ^:private hostname
   (delay
     (try
       (.getHostName (InetAddress/getLocalHost))
@@ -22,7 +25,7 @@
            :const   true
            :static  true}
          client-name
-         "sentry-tiny/0.x.y")
+         "sentry-tiny/0.1.x")
 
 (defn- make-frame [^StackTraceElement element app-namespaces]
   {:filename (.getFileName element)
@@ -33,7 +36,7 @@
 (defn- make-stacktrace-info [elements app-namespaces]
   {:frames (reverse (map #(make-frame % app-namespaces) elements))})
 
-(defn add-stacktrace [event-map ^Exception e & [app-namespaces]]
+(defn- add-stacktrace [event-map ^Exception e & [app-namespaces]]
   (assoc event-map
     :exception
     [{:stacktrace (make-stacktrace-info (.getStackTrace e) app-namespaces)
@@ -43,17 +46,17 @@
 (defn- generate-uuid []
   (str/replace (uuid/v4) #"-" ""))
 
-(defn make-sentry-url [uri project-id]
+(defn- make-sentry-url [uri project-id]
   (format "%s/api/%s/store/" uri project-id))
 
-(defn make-sentry-header [ts key secret]
+(defn- make-sentry-header [ts key secret]
   (str "Sentry sentry_version=2.0, "
        "sentry_client=" client-name ", "
        "sentry_timestamp=" ts ", "
        "sentry_key=" key ", "
        "sentry_secret=" secret))
 
-(defn send-event [{:keys [ts uri project-id key secret]} event-info]
+(defn- send-event [{:keys [ts uri project-id key secret]} event-info]
   (let [url (make-sentry-url uri project-id)
         header (make-sentry-header ts key secret)]
     (http/request {:url              url
@@ -73,7 +76,7 @@
       {:level       "error"
        :platform    "clojure"
        :server_name @hostname
-       :ts          (str (Timestamp. (.getTime (Date.))))   ;; TODO: maybe avoid direct use of Timestamp class
+       :timestamp   (ft/unparse (ft/formatters :date-hour-minute-second) (t/now))
        :event_id    (generate-uuid)}
       event-info)))
 
@@ -91,13 +94,13 @@
                    (add-info "sentry.interfaces.User" user-info req)
                    (add-stacktrace e namespaces))))))
 
-(defn build-url [{port :server-port :keys [scheme server-name uri]}]
+(defn- build-url [{port :server-port :keys [scheme server-name uri]}]
   (str (when scheme (name scheme) "://") server-name
        (when (and port (not= 80 port))
          (str ":" port))
        uri))
 
-(defn http-info [req]
+(defn- http-info [req]
   {:url          (build-url req)
    :method       (:method req)
    :headers      (:headers req {})
@@ -126,9 +129,9 @@
         :capture? capture?
         :http-info (:http-info config http-info)))))
 
-(def normalize (memoize -normalize))
+(def ^:private normalize (memoize -normalize))
 
-(defn extract-config [config req]
+(defn- extract-config [config req]
   (or (when (vector? config)
         (get-in req config))
       (when (ifn? config)
@@ -137,17 +140,10 @@
         config)
       @fallback))
 
-(defn capture-error
+(defn- capture-error
   ([e]
    (capture-error nil nil e))
   ([config-or-req e]
    (capture-error config-or-req config-or-req e))
   ([config req e]
    (#'-capture-error (normalize (extract-config config req)) req e)))
-
-(defn match? [catch? e]
-  (cond
-    (class? catch?) (instance? catch? e)
-    (coll? catch?) (some #(match? % e) catch?)
-    (ifn? catch?) (or (catch? e) (catch? (class e)))
-    :else false))
