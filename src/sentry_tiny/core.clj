@@ -8,10 +8,7 @@
      [core :as t]
      [format :as ft]])
   (:import
-    (java.net InetAddress)
-    (java.sql Timestamp)
-    (java.util Date TimeZone)
-    (java.text SimpleDateFormat)))
+    (java.net InetAddress)))
 
 (defonce ^:private fallback (atom {:enabled? false}))
 
