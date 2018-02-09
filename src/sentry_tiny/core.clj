@@ -21,8 +21,14 @@
 (defonce ^{:private true
            :const   true
            :static  true}
+         lib-version
+         (-> (slurp "VERSION") .trim))
+
+(defonce ^{:private true
+           :const   true
+           :static  true}
          client-name
-         "sentry-tiny/0.1.x")
+         (str "sentry-tiny/" lib-version))
 
 (defn- make-frame [^StackTraceElement element app-namespaces]
   {:filename (.getFileName element)
@@ -137,7 +143,7 @@
         config)
       @fallback))
 
-(defn- capture-error
+(defn capture-error
   ([e]
    (capture-error nil nil e))
   ([config-or-req e]
