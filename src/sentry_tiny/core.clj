@@ -1,6 +1,7 @@
 (ns sentry-tiny.core
   (:require
     [clojure.string :as str]
+    [clojure.java.io :as io]
     [org.httpkit.client :as http]
     [cheshire.core :as json]
     [clj-uuid :as uuid]
@@ -22,7 +23,8 @@
            :const   true
            :static  true}
          lib-version
-         (-> (slurp "VERSION") .trim))
+         (or (some-> "VERSION" io/resource slurp str/trim)
+             "x.y.z-devel"))
 
 (defonce ^{:private true
            :const   true

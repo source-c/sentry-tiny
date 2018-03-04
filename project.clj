@@ -1,4 +1,4 @@
-(defproject net.tbt-post/sentry-tiny (-> (slurp "VERSION") .trim)
+(defproject net.tbt-post/sentry-tiny (-> "VERSION" slurp .trim)
   :description "Tiny Sentry Interface for Clojure"
   :url "https://github.com/source-c/sentry-tiny"
   :license {:name "Eclipse Public License"
