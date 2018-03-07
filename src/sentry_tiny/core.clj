@@ -90,6 +90,10 @@
     (assoc event-map iface (info-fn req))
     event-map))
 
+(defn e->evi [ns ^Throwable e]
+  (-> (merge {} {:message (.getMessage e)})
+      (add-stacktrace e ns)))
+
 (defn -capture-error [{:keys [packet-info extra namespaces capture? http-info user-info]} req ^Throwable e]
   (when (and capture? (capture? e))
     (future
