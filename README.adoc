@@ -11,7 +11,7 @@ Add the following to your http://github.com/technomancy/leiningen[Leiningen's] `
 
 [source,clojure]
 ----
-[net.tbt-post/sentry-tiny "0.1.3"]
+[net.tbt-post/sentry-tiny "0.1.5"]
 ----
 
 == Manual Build
