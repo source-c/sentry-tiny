@@ -4,12 +4,12 @@
     [clojure.java.io :as io]
     [org.httpkit.client :as http]
     [cheshire.core :as json]
-    [clj-uuid :as uuid]
     [clj-time
      [core :as t]
      [format :as ft]])
   (:import
-    (java.net InetAddress)))
+    (java.net InetAddress)
+    (java.util UUID)))
 
 (defonce ^:private fallback (atom {:enabled? false}))
 
@@ -49,7 +49,7 @@
       :value      (.getMessage e)}]))
 
 (defn- generate-uuid []
-  (str/replace (uuid/v4) #"-" ""))
+  (str/replace (UUID/randomUUID) #"-" ""))
 
 (defn- make-sentry-url [uri project-id]
   (format "%s/api/%s/store/" uri project-id))

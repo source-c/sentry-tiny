@@ -1,7 +1,7 @@
 = sentry-tiny
 
 A Clojure library designed to cover basic needs of pushing exceptions into Sentry.
-Not more, but not less
+We should prize every moment, isn't it?
 
 image:https://img.shields.io/clojars/v/net.tbt-post/sentry-tiny.svg[]
 
@@ -11,8 +11,36 @@ Add the following to your http://github.com/technomancy/leiningen[Leiningen's] `
 
 [source,clojure]
 ----
-[net.tbt-post/sentry-tiny "0.1.5"]
+[net.tbt-post/sentry-tiny "0.1.6"]
 ----
+
+and just use it to catch your exception:
+
+[source,clojure]
+----
+(require '[sentry-tiny.core :as stc])
+
+(def dsn "http://<digest>@<sentry>/<id>")
+
+(defn catch [ns _ _ ^Throwable e]
+  (-> dsn
+      stc/parse-dsn
+      (stc/capture (stc/e->evi [(str ns)] e))))
+----
+
+or to just send a message
+
+[source,clojure]
+----
+(defn message [msg]
+  (-> dsn
+      stc/parse-dsn
+      (stc/capture
+        (stc/e->evi [(str *ns*)]
+                    (RuntimeException. msg)))))
+----
+
+You may eventually use it as a replacement inside of your web app router.
 
 == Manual Build
 
