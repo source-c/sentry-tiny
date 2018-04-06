@@ -71,19 +71,30 @@
                    :headers          {"X-Sentry-Auth" header "User-Agent" client-name}
                    :body             (json/generate-string event-info)})))
 
-(defn capture [packet-info event-info]
+(defn -level [^String level]
+  (or (#{"error"
+         "fatal"
+         "warning"
+         "info"
+         "debug"} level) "error"))
+
+(def ^:private elevel (memoize -level))
+
+(defn capture
   "Send a message to a Sentry server.
   event-info is a map that should contain a :message key and optional
-  keys found at http://sentry.readthedocs.org/en/latest/developer/client/index.html#building-the-json-packet"
-  (send-event
-    packet-info
-    (merge
-      {:level       "error"
-       :platform    "clojure"
-       :server_name @hostname
-       :timestamp   (ft/unparse (ft/formatters :date-hour-minute-second) (t/now))
-       :event_id    (generate-uuid)}
-      event-info)))
+  keys found at https://docs.sentry.io/clientdev/attributes/#optional-attributes"
+  ([packet-info event-info] (capture packet-info event-info "error"))
+  ([packet-info event-info ^String level]
+     (send-event
+       packet-info
+       (merge
+         {:level       (elevel level)
+          :platform    "clojure"
+          :server_name @hostname
+          :timestamp   (ft/unparse (ft/formatters :date-hour-minute-second) (t/now))
+          :event_id    (generate-uuid)}
+         event-info))))
 
 (defn- add-info [event-map iface info-fn req]
   (if info-fn
