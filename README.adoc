@@ -11,7 +11,7 @@ Add the following to your http://github.com/technomancy/leiningen[Leiningen's] `
 
 [source,clojure]
 ----
-[net.tbt-post/sentry-tiny "0.1.6"]
+[net.tbt-post/sentry-tiny "0.1.7"]
 ----
 
 and just use it to catch your exception:
@@ -37,7 +37,8 @@ or to just send a message
       stc/parse-dsn
       (stc/capture
         (stc/e->evi [(str *ns*)]
-                    (RuntimeException. msg)))))
+                    (RuntimeException. msg))
+        "warning")))
 ----
 
 You may eventually use it as a replacement inside of your web app router.
