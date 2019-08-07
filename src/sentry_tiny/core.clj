@@ -23,7 +23,7 @@
            :const   true
            :static  true}
          lib-version
-         (or (some-> "VERSION" io/resource slurp str/trim)
+         (or (some-> "sentry-tiny.VERSION" io/resource slurp str/trim)
              "x.y.z-devel"))
 
 (defonce ^{:private true

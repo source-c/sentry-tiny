@@ -3,6 +3,6 @@
   :url "https://github.com/source-c/sentry-tiny"
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[cheshire "5.8.0"]
-                 [http-kit "2.2.0"]
-                 [clj-time "0.14.2"]])
+  :dependencies [[cheshire "5.9.0"]
+                 [http-kit "2.3.0"]
+                 [clj-time "0.15.1"]])

@@ -11,7 +11,7 @@ Add the following to your http://github.com/technomancy/leiningen[Leiningen's] `
 
 [source,clojure]
 ----
-[net.tbt-post/sentry-tiny "0.1.7"]
+[net.tbt-post/sentry-tiny "0.1.8"]
 ----
 
 and just use it to catch your exception:
@@ -52,7 +52,7 @@ $ lein install
 
 == License
 
-Copyright © 2017-2018
+Copyright © 2017-2019
 
-Distributed under the http://www.apache.org/licenses/LICENSE-2.0[Apache License v 2.0]
+Distributed under the Eclipse Public License.
 
