@@ -119,7 +119,7 @@
    https://github.com/ring-clojure/ring/wiki/Concepts"
   [{port :server-port :keys [scheme server-name uri]}]
   (str (when scheme (str (name scheme) "://")) server-name
-       (when (and port (not= 80 port))
+       (when (and port (not= ({:http 80 :https 443} scheme) port))
          (str ":" port))
        uri))
 
@@ -131,6 +131,15 @@
                      :server-name "some.host"
                      :server-port 1234
                      :uri         "/path"})))
+
+  (are [url scheme port]
+       (= url (build-url {:scheme scheme :server-port port}))
+       "http://" :http 80
+       "http://:1" :http 1
+       "https://" :https 443
+       "https://:1" :https 1
+       "unknown://" :unknown nil
+       "unknown://:1" :unknown 1)
   )
 
 (defn- http-info [req]
