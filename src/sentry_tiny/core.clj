@@ -3,13 +3,12 @@
     [clojure.string :as str]
     [clojure.java.io :as io]
     [org.httpkit.client :as http]
-    [cheshire.core :as json]
-    [clj-time
-     [core :as t]
-     [format :as ft]])
+    [cheshire.core :as json])
   (:import
     (java.net InetAddress)
-    (java.util UUID)))
+    (java.util UUID)
+    (java.time OffsetDateTime ZoneOffset)
+    (java.time.format DateTimeFormatter)))
 
 (defonce ^:private fallback (atom {:enabled? false}))
 
@@ -80,6 +79,13 @@
 
 (def ^:private elevel (memoize -level))
 
+(def ^:private timestamp-fmt "YYYY-MM-dd'T'HH:mm:ss")
+
+(defn- timestamp
+  ([] (timestamp (OffsetDateTime/now ZoneOffset/UTC)))
+  ([^OffsetDateTime date-time]
+   (-> date-time (.format (DateTimeFormatter/ofPattern timestamp-fmt)))))
+
 (defn capture
   "Send a message to a Sentry server.
   event-info is a map that should contain a :message key and optional
@@ -92,7 +98,7 @@
          {:level       (elevel level)
           :platform    "clojure"
           :server_name @hostname
-          :timestamp   (ft/unparse (ft/formatters :date-hour-minute-second) (t/now))
+          :timestamp   (timestamp)
           :event_id    (generate-uuid)}
          event-info))))
 
