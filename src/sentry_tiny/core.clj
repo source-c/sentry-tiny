@@ -115,10 +115,20 @@
                    (add-stacktrace e namespaces))))))
 
 (defn- build-url [{port :server-port :keys [scheme server-name uri]}]
-  (str (when scheme (name scheme) "://") server-name
+  (str (when scheme (str (name scheme) "://")) server-name
        (when (and port (not= 80 port))
          (str ":" port))
        uri))
+
+(comment
+  (use 'clojure.test)
+
+  (is (= "https://some.host:1234/path"
+         (build-url {:scheme      :https
+                     :server-name "some.host"
+                     :server-port 1234
+                     :uri         "/path"})))
+  )
 
 (defn- http-info [req]
   {:url          (build-url req)
