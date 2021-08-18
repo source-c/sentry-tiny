@@ -114,7 +114,10 @@
                    (add-info "sentry.interfaces.User" user-info req)
                    (add-stacktrace e namespaces))))))
 
-(defn- build-url [{port :server-port :keys [scheme server-name uri]}]
+(defn- build-url
+  "Reconstruct a URL from a ring request map, using the keys defined in
+   https://github.com/ring-clojure/ring/wiki/Concepts"
+  [{port :server-port :keys [scheme server-name uri]}]
   (str (when scheme (str (name scheme) "://")) server-name
        (when (and port (not= 80 port))
          (str ":" port))
