@@ -4,5 +4,4 @@
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[cheshire "5.10.1"]
-                 [http-kit "2.5.3"]
-                 [clj-time "0.15.2"]])
+                 [http-kit "2.5.3"]])
