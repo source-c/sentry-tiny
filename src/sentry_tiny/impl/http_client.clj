@@ -15,7 +15,8 @@
   (load "http")
   (refer 'sentry-tiny.impl.http :only '[request])
   (alter-var-root #'http (constantly 'sentry-tiny.impl.http))
-  (alter-var-root #'request (constantly (resolve 'sentry-tiny.impl.http/request)))
+  #_(alter-var-root #'request (constantly (resolve 'sentry-tiny.impl.http/request)))
+  (alter-var-root #'request (constantly (resolve 'request)))
   (println "Meta:" (meta #'request)))
 
 (def client-inited (promise))

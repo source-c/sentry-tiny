@@ -24,6 +24,6 @@
                   (reflect-client)
                   (println "AFTER:" http request)
                   (println "M:" (macroexpand-1 '(request {:url "https://google.com"})))
-                  #_(println @(request {:url "https://google.com"}))
+                  (println @(request {:url "https://google.com"}))
                   true)))
   (is (= 200 200)))
