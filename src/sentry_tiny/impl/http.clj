@@ -77,7 +77,7 @@
                 headers
                 method
                 timeout
-                uri
+                url
                 version
                 body]} opts]
     (cond-> (HttpRequest/newBuilder)
@@ -85,7 +85,7 @@
             (seq headers) (.headers (into-array String (eduction convert-headers-xf headers)))
             method (.method (method-keyword->str method) (convert-body-publisher body))
             timeout (.timeout (convert-timeout timeout))
-            uri (.uri (URI/create uri))
+            url (.uri (URI/create url))
             version (.version (version-keyword->version-enum version)))))
 
 (defn- build-request
@@ -103,7 +103,7 @@
 (defn- convert-request [req]
   (cond
     (map? req) (build-request req)
-    (string? req) (build-request {:uri req})
+    (string? req) (build-request {:url req})
     (instance? HttpRequest req) req))
 
 (defn send
@@ -114,3 +114,23 @@
          req' (convert-request req)
          resp (.send client req' (convert-body-handler as))]
      (if raw? resp (response->map resp)))))
+
+(comment
+  ;; Custom client
+  (def client (http/build-client {:follow-redirects :always}))
+  (http/send {:url "http://www.google.com" :method :get} {:client client})
+
+  ;; Skip map conversion and return the java.net.http.HttpResponse object
+  (http/send {:url "http://www.google.com" :method :get} {:raw? true})
+  object [jdk.internal.net.http.HttpResponseImpl "0x88edd90" "(GET http://www.google.com) 200"]
+
+  ;; we need only
+  (http/request {:url              url
+                 :method           :post
+                 :insecure?        true
+                 :throw-exceptions false
+                 :headers          {"X-Sentry-Auth" header "User-Agent" client-name}
+                 :body             (json/generate-string event-info)}))
+
+(defmacro request [& ops]
+  `(future-call #(send ~@ops {:raw? true})))
