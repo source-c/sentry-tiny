@@ -18,7 +18,7 @@ Add the following to your http://github.com/technomancy/leiningen[Leiningen's] `
 
 [source,clojure]
 ----
-[net.tbt-post/sentry-tiny "0.1.13"]
+[net.tbt-post/sentry-tiny "0.1.14"]
 ----
 
 and just use it to catch your exception:
